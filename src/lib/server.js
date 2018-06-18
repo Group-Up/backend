@@ -1,6 +1,6 @@
 'use strict';
 
-// import cors from 'cors';
+import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 import logger from './logger';
@@ -8,22 +8,24 @@ import loggerMiddleware from './logger-middleware';
 import errorMiddleware from './error-middleware';
 import authRoutes from '../routes/account-router';
 import profileRoutes from '../routes/profile-router';
+import googleAuthRoute from '../routes/google-login-route';
 
 const app = express();
 let server = null;
 
-// app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
-app.use(loggerMiddleware); // logger middleware at the app-level
+app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
+app.use(loggerMiddleware);
 
-app.use(authRoutes); // TODO: Add auth routes here
+app.use(authRoutes);
 app.use(profileRoutes);
+app.use(googleAuthRoute);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');
   return response.sendStatus(404);
 });
 
-app.use(errorMiddleware); // error catching middleware...this is 'next'
+app.use(errorMiddleware);
 
 const startServer = () => {
   return mongoose.connect(process.env.MONGODB_URI)

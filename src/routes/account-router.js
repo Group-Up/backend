@@ -7,7 +7,6 @@ import logger from '../lib/logger';
 import Account from '../model/account';
 import basicAuthMiddleware from '../lib/basic-auth-middleware';
 
-
 const jsonParser = bodyParser.json();
 
 const accountRouter = new Router();
@@ -21,9 +20,9 @@ accountRouter.post('/signup', jsonParser, (request, response, next) => {
     })
     .then((token) => {
       logger.log(logger.INFO, 'AUTH - returning a 200 code and a token');
-      return response.json({
-        token,
-      });
+      return response
+        .cookie('GU-Token', token)
+        .send({ token });
     })
     .catch(next);
 });
@@ -32,14 +31,10 @@ accountRouter.get('/login', basicAuthMiddleware, (request, response, next) => {
   if (!request.account) {
     return next(new HttpError(404, 'AUTH - no resource, now in auth-router'));
   }
-  const userId = request.account._id;
   return request.account.pCreateLoginToken()
     .then((token) => {
       logger.log(logger.INFO, 'LOGIN - AuthRouter responding with a 200 status and a Token');
-      return response.json({
-        token,
-        _id: userId,
-      });
+      return response.send({ token });
     })
     .catch(next);
 });

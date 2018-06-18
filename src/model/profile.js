@@ -34,6 +34,9 @@ const profileSchema = mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId, ref: 'post',
     },
   ],
+  friends: {
+    type: Array,
+  },
 }, {
   usePushEach: true,
 });

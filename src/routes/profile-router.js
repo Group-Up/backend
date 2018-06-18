@@ -21,6 +21,7 @@ profileRouter.post('/profiles', bearerAuthMiddleware, jsonParser, (request, resp
     bio: request.body.bio,
     email: request.account.email,
     account: request.account._id,
+    profileImage: request.body.profileImage,
   }).save()
     .then((profile) => {
       logger.log(logger.INFO, 'Returning a 200 and a new Profile');
@@ -33,7 +34,7 @@ profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, nex
   return Profile.findById(request.params.id)
     .then((profile) => {
       if (!profile) {
-        return next(new HttpError(400, ' no profile AUTH - invalid request'));
+        return next(new HttpError(400, 'no profile AUTH - invalid request'));
       }
       logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
       return response.json(profile);
