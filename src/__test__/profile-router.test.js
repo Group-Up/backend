@@ -12,44 +12,39 @@ describe('POST /profiles', () => {
   afterAll(stopServer);
   afterEach(pRemoveProfileMock);
 
-  test.only('POST /profiles should return a 200 status code if successful and the newly created profile', () => {
+  test('POST /profiles should return a 200 status code if successful and the newly created profile', () => {
     let accountMock = null;
     return pCreateAccountMock()
       .then((accountSetMock) => {
-        console.log(accountSetMock, 'OVER HERERERERERE');
         accountMock = accountSetMock;
         return superagent.post(`${apiURL}/profiles`)
           .set('Authorization', `Bearer ${accountSetMock.token}`)
           .send({
             bio: 'I like coffee',
-            username: 'Carl',
-            email: 'testing@gmail.com',
-            // lastName: 'Olson',
           });
       })
       .then((response) => {
         expect(response.status).toEqual(200);
         expect(response.body.account).toEqual(accountMock.account._id.toString());
-        expect(response.body.username).toEqual('Carl');
-        expect(response.body.lastName).toEqual('Olson');
+        expect(response.body.username).toEqual(accountMock.account.username);
         expect(response.body.bio).toEqual('I like coffee');
       });
   });
 
-  test('POST /profiles should return a 400 status code if incomplete request data sent', () => {
-    return pCreateAccountMock()
-      .then((accountSetMock) => {
-        return superagent.post(`${apiURL}/profiles`)
-          .set('Authorization', `Bearer ${accountSetMock.token}`)
-          .send({
-            bio: 'I like coffee',
-          });
-      })
-      .then(Promise.reject)
-      .catch((err) => {
-        expect(err.status).toEqual(400);
-      });
-  });
+  // test('POST /profiles should return a 400 status code if incomplete request data sent', () => {
+  //   return pCreateAccountMock()
+  //     .then((accountSetMock) => {
+  //       return superagent.post(`${apiURL}/profiles`)
+  //         .set('Authorization', `Bearer ${accountSetMock.token}`)
+  //         .send({
+  //           bio: 'I like coffee',
+  //         });
+  //     })
+  //     .then(Promise.reject)
+  //     .catch((err) => {
+  //       expect(err.status).toEqual(400);
+  //     });
+  // });
 
   test('POST /profiles should return a 401 status code if token is invalid', () => {
     return pCreateAccountMock()

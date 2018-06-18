@@ -19,6 +19,7 @@ profileRouter.post('/profiles', bearerAuthMiddleware, jsonParser, (request, resp
   return new Profile({
     username: request.account.username,
     bio: request.body.bio,
+    email: request.account.email,
     account: request.account._id,
   }).save()
     .then((profile) => {
