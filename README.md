@@ -45,3 +45,5 @@ JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winsto
 
 
 #### Model Relationships
+## Description
+The GroupUp application provides users with a common virtual meeting place where they can plan events, update agendas, send messages and keep track of any information a group would enjoy having easy access to!  Users can easily invite friends, family or coworkers by accessing their Google contacts directly from the GroupUp application.  Within your custom group, share locations you plan to meet, share photos of an event and message all the members in your group at once!  GroupUp will make any company event, convention, road-trip or party a breeze to plan.
