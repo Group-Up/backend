@@ -64,7 +64,6 @@ googleRouter.get('/oauth/google', (request, response, next) => {
         user.email = openIdResponse.body.email;
         user.isGoogle = true;
         const profileImage = openIdResponse.body.picture;
-        // FIND IF USER EXISTS
         return Account.findOne({ email: user.email })
           .then((account) => {
             if (!account) {
