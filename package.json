@@ -4,7 +4,14 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage --forceExit --runInBand",
+    "dbon": "mkdir -p ./db && mongod --dbpath ./db",
+    "dboff": "killall mongod"
+  },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/__test__/lib/jest-setup.js"
+    ]
   },
   "repository": {
     "type": "git",
