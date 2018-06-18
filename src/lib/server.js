@@ -8,6 +8,7 @@ import loggerMiddleware from './logger-middleware';
 import errorMiddleware from './error-middleware';
 import authRoutes from '../routes/account-router';
 import profileRoutes from '../routes/profile-router';
+import eventRoutes from '../routes/event-router';
 
 const app = express();
 let server = null;
@@ -15,15 +16,16 @@ let server = null;
 // app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
 app.use(loggerMiddleware); // logger middleware at the app-level
 
-app.use(authRoutes); // TODO: Add auth routes here
+app.use(authRoutes);
 app.use(profileRoutes);
+app.use(eventRoutes);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');
   return response.sendStatus(404);
 });
 
-app.use(errorMiddleware); // error catching middleware...this is 'next'
+app.use(errorMiddleware);
 
 const startServer = () => {
   return mongoose.connect(process.env.MONGODB_URI)
