@@ -17,7 +17,7 @@ accountRouter.post('/signup', jsonParser, (request, response, next) => {
     .then((account) => {
       delete request.body.password;
       logger.log(logger.INFO, 'AUTH - creating TOKEN');
-      return account.pCreateToken();
+      return account.pCreateLoginToken();
     })
     .then((token) => {
       logger.log(logger.INFO, 'AUTH - returning a 200 code and a token');
@@ -28,20 +28,20 @@ accountRouter.post('/signup', jsonParser, (request, response, next) => {
     .catch(next);
 });
 
-// accountRouter.get('/api/login', basicAuthMiddleware, (request, response, next) => {
-//   if (!request.account) {
-//     return next(new HttpError(404, 'AUTH - no resource, now in auth-router'));
-//   }
-//   const userId = request.account._id;
-//   return request.account.pCreateToken()
-//     .then((token) => {
-//       logger.log(logger.INFO, 'LOGIN - AuthRouter responding with a 200 status and a Token');
-//       return response.json({
-//         token,
-//         _id: userId,
-//       });
-//     })
-//     .catch(next);
-// });
+accountRouter.get('/login', basicAuthMiddleware, (request, response, next) => {
+  if (!request.account) {
+    return next(new HttpError(404, 'AUTH - no resource, now in auth-router'));
+  }
+  const userId = request.account._id;
+  return request.account.pCreateLoginToken()
+    .then((token) => {
+      logger.log(logger.INFO, 'LOGIN - AuthRouter responding with a 200 status and a Token');
+      return response.json({
+        token,
+        _id: userId,
+      });
+    })
+    .catch(next);
+});
 
 export default accountRouter;

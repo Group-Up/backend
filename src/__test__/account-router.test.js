@@ -11,12 +11,12 @@ describe('ACCOUNT Router', () => {
   afterAll(stopServer);
   afterEach(pRemoveAccountMock);
 
-  test.only('POST should return a 200 status code and a TOKEN', () => {
+  test('POST should return a 200 status code and a TOKEN', () => {
     return superagent.post(`${apiURL}/signup`)
       .send({
         username: 'testuser',
         email: 'testuser@testuser.com',
-        passwordHash: 'testuserpassword',
+        password: 'testuserpassword',
       })
       .then((response) => {
         expect(response.status).toEqual(200);
@@ -54,6 +54,28 @@ describe('ACCOUNT Router', () => {
           .catch((err) => {
             expect(err.status).toEqual(409);
           });
+      });
+  });
+  test('GET /login', () => {
+    return pCreateAccountMock()
+      .then((mock) => {
+        return superagent.get(`${apiURL}/login`)
+          .auth(mock.request.username, mock.request.password);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body.token).toBeTruthy();
+      });
+  });
+  test('GET /login should return 400 bad request', () => {
+    return pCreateAccountMock()
+      .then((mock) => {
+        return superagent.get(`${apiURL}/login`)
+          .send(mock.request.username, mock.request.password);
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(400);
       });
   });
 });
