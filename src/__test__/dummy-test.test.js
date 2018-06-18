@@ -1,5 +1,5 @@
 
 
 test('avoid travis failure', () => {
-  expect(true).toBeTrue();
+  expect(true).toEqual(true);
 });
