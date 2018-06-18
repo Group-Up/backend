@@ -1,6 +1,5 @@
 'use strict';
 
-import sossms from 'sos-sms';
 import logger from './logger';
 
 export default (error, request, response, next) => { // eslint-disable-line no-unused-vars
@@ -23,7 +22,6 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
     return response.sendStatus(400);
   }
   if (errorMessage.includes('duplicate key')) {
-    sossms(409, '5aff3f1038115b001a8905e4', 'Zachary, get back to work!');
     logger.log(logger.INFO, 'ERROR MIDDLEWARE: Responding with a 409 code');
     return response.sendStatus(409);
   }

@@ -6,6 +6,11 @@
   "scripts": {
     "test": "jest --coverage"
   },
+  "jest": {
+    "setupFiles": [
+      "<rootDir>/src/__test__/lib/jest-setup.js"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Group-Up/backend.git"
