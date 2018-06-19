@@ -4,7 +4,7 @@ import faker from 'faker';
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
 import { pCreateProfileMock } from './lib/profile-mock';
-import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
+import { pCreateEventMock, pRemoveEventMock, pCreatePublicEventMock } from './lib/event-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
@@ -133,6 +133,45 @@ describe('EVENT ROUTER', () => {
         })
         .then((response) => {
           expect(response.status).toEqual(204);
+        });
+    });
+  });
+
+  describe('GET EVENT', () => {
+    test('should return 200 status and event', () => {
+      let eventCreated = null;
+      return pCreateEventMock()
+        .then((mockEvent) => {
+          eventCreated = mockEvent.event;
+          return superagent.get(`${apiURL}/events/${mockEvent.event._id}`)
+            .set('Authorization', `Bearer ${mockEvent.profile.accountSetMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.title).toEqual(eventCreated.title);
+          expect(response.body._id.toString()).toEqual(eventCreated._id.toString());
+          expect(response.body.description).toEqual(eventCreated.description);
+          expect(response.body.location).toEqual(eventCreated.location);
+          expect(response.body.profile.toString()).toEqual(eventCreated.profile.toString());
+        });
+    });
+  });
+
+  describe('GET PUBLIC EVENTS', () => {
+    test('should return 200 status and all public events', () => {
+      let publicEvent = null;
+      return pCreatePublicEventMock()
+        .then((resultMock) => {
+          publicEvent = resultMock.event;
+          return superagent.get(`${apiURL}/events/public`)
+            .set('Authorization', `Bearer ${resultMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveLength(1);
+          expect(response.body[0].title).toEqual(publicEvent.title);
+          expect(response.body[0]._id).toEqual(publicEvent._id.toString());
+          expect(response.body[0].isPublic).toEqual(true);
         });
     });
   });
