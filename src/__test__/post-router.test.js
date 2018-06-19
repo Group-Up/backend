@@ -1,14 +1,15 @@
 'use strict';
 
 import superagent from 'superagent';
-import logger from '../lib/logger';
 import { startServer, stopServer } from '../lib/server';
 import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
+import { pCreatePostMock, pRemovePostMock } from './lib/post-mock';
 
 describe('POST ROUTER', () => {
   beforeAll(startServer);
   afterAll(stopServer);
   afterEach(() => {
+    pRemovePostMock();
     pRemoveEventMock();
   });
 
@@ -20,10 +21,8 @@ describe('POST ROUTER', () => {
       .then((eventSetMock) => {
         mocks.event = eventSetMock.event;
         mocks.profile = eventSetMock.profile.profile;
-        mocks.token = eventSetMock.profile.accountSetMock.token;
-        console.log(mocks);
         return superagent.post(`${apiUrl}/posts/${mocks.event._id}`)
-          .set('Authorization', `Bearer ${mocks.token}`)
+          .set('Authorization', `Bearer ${eventSetMock.profile.accountSetMock.token}`)
           .send({
             title: 'Test post',
             description: 'Testing!',
@@ -31,7 +30,6 @@ describe('POST ROUTER', () => {
           });
       })
       .then((response) => {
-        logger.log(logger.INFO, response.body);
         expect(response.status).toEqual(200);
         expect(response.body.title).toEqual('Test post');
         expect(response.body.description).toEqual('Testing!');
@@ -39,6 +37,21 @@ describe('POST ROUTER', () => {
         expect(response.body.timestamp).toBeTruthy();
         expect(response.body.isAnnouncement).toBe(false);
         expect(response.body.event).toEqual(mocks.event._id.toString());
+      });
+  });
+
+  test('GET /posts/:event_id should return 200 status code and all posts on event', () => {
+    let mockPost = null;
+    return pCreatePostMock()
+      .then((postMock) => {
+        mockPost = postMock.post;
+        return superagent.get(`${apiUrl}/posts/${postMock.event._id}`)
+          .set('Authorization', `Bearer ${postMock.token}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].title).toEqual(mockPost.title);
       });
   });
 });

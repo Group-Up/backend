@@ -9,7 +9,6 @@ const pCreateProfileMock = () => {
   return pCreateAccountMock()
     .then((accountSetMock) => {
       resultMock.accountSetMock = accountSetMock;
-      console.log(resultMock);
       return new Profile({
         bio: faker.lorem.words(10),
         email: accountSetMock.account.email,

@@ -37,6 +37,12 @@ const eventSchema = mongoose.Schema({
     required: true,
     ref: 'profile',
   },
+  posts: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'post',
+    },
+  ],
 });
 
 export default mongoose.model('event', eventSchema);
