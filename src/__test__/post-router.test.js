@@ -6,8 +6,6 @@ import { startServer, stopServer } from '../lib/server';
 import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
 import { pCreatePostMock, pRemovePostMock } from './lib/post-mock';
 
-// jest.setTimeout(10000);
-
 describe('POST ROUTER', () => {
   beforeAll(startServer);
   afterAll(stopServer);
