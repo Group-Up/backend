@@ -34,7 +34,7 @@ const postSchema = mongoose.Schema({
     ref: 'profile',
   },
   event: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
   },
 });
@@ -66,7 +66,7 @@ function removePostHook(document, next) {
         return post._id.toString() !== document._id.toString();
       });
       profileFound.save();
-      Event.findById(document.event);
+      return Event.findById(document.event);
     })
     .then((eventFound) => {
       if (!eventFound) throw new HttpError(500, 'Event not found');

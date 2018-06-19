@@ -1,10 +1,3 @@
-// Posts:
-//   PUT /posts/:post_id
-//      Input: any changed information on post
-//      Output: updated post
-//   DELETE /posts/:post_id
-//      Input: post id
-//      Output: 204 status code
 //   Stretch Goal:
 //      PUT /posts/likes/:post_id
 //        Input: post id
@@ -50,13 +43,41 @@ postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, nex
     .catch(next);
 });
 
-postRouter.put('/posts/:post_id/', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
   if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
   return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
     .then((updatedPost) => {
       logger.log(logger.INFO, '200 - Updating post');
       return response.json(updatedPost);
+    })
+    .catch(next);
+});
+
+postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
+  const options = { runValidators: true, new: true };
+  return Post.findById(request.params.post_id)
+    .then((foundPost) => {
+      const updatedLikes = [...foundPost.likes, request.account.username];
+      return Post.findByIdAndUpdate(request.params.post_id, { likes: updatedLikes }, options);
+    })
+    .then((updatedPost) => {
+      logger.log(logger.INFO, '200 - Adding like to post');
+      return response.json(updatedPost);
+    })
+    .catch(next);
+});
+
+postRouter.delete('/posts/:post_id', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
+  return Post.findById(request.params.post_id)
+    .then((post) => {
+      return post.remove();
+    })
+    .then(() => {
+      logger.log(logger.INFO, '204 - Successful delete');
+      return response.sendStatus(204);
     })
     .catch(next);
 });

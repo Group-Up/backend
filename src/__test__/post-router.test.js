@@ -1,6 +1,7 @@
 'use strict';
 
 import superagent from 'superagent';
+import Event from '../model/event';
 import { startServer, stopServer } from '../lib/server';
 import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
 import { pCreatePostMock, pRemovePostMock } from './lib/post-mock';
@@ -68,6 +69,40 @@ describe('POST ROUTER', () => {
         expect(response.status).toEqual(200);
         expect(response.body.title).toEqual('NEW TITLE');
         expect(response.body.profile).toEqual(postToUpdate.profile.toString());
+      });
+  });
+
+  test('DELETE /posts/:post_id should return 204 status code', () => { // eslint-disable-line
+    let eventToCompare = null;
+    return pCreatePostMock()
+      .then((postMock) => {
+        eventToCompare = postMock.event;
+        return superagent.del(`${apiUrl}/posts/${postMock.post._id}`)
+          .set('Authorization', `Bearer ${postMock.token}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(204);
+        return Event.findById(eventToCompare._id);
+      })
+      .then((event) => {
+        expect(event.posts).toHaveLength(0);
+      });
+  });
+
+  test('PUT /posts/likes/:post_id should return 200 status and updated post', () => {
+    let postToUpdate = null;
+    let usernameMock = null;
+    return pCreatePostMock()
+      .then((postMock) => {
+        postToUpdate = postMock.post;
+        usernameMock = postMock.profile.username;
+        return superagent.put(`${apiUrl}/posts/likes/${postToUpdate._id}`)
+          .set('Authorization', `Bearer ${postMock.token}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body.likes).toHaveLength(1);
+        expect(response.body.likes[0]).toEqual(usernameMock);
       });
   });
 });
