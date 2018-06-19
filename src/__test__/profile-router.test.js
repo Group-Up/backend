@@ -31,21 +31,6 @@ describe('POST /profiles', () => {
       });
   });
 
-  // test('POST /profiles should return a 400 status code if incomplete request data sent', () => {
-  //   return pCreateAccountMock()
-  //     .then((accountSetMock) => {
-  //       return superagent.post(`${apiURL}/profiles`)
-  //         .set('Authorization', `Bearer ${accountSetMock.token}`)
-  //         .send({
-  //           bio: 'I like coffee',
-  //         });
-  //     })
-  //     .then(Promise.reject)
-  //     .catch((err) => {
-  //       expect(err.status).toEqual(400);
-  //     });
-  // });
-
   test('POST /profiles should return a 401 status code if token is invalid', () => {
     return pCreateAccountMock()
       .then(() => {

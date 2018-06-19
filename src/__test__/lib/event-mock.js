@@ -6,7 +6,6 @@ import { pCreateProfileMock, pRemoveProfileMock } from './profile-mock';
 
 const pCreateEventMock = () => {
   const resultsMock = {};
-  
   return pCreateProfileMock()
     .then((createdProfile) => {
       resultsMock.profile = createdProfile;
