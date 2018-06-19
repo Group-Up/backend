@@ -9,6 +9,7 @@ import errorMiddleware from './error-middleware';
 import authRoutes from '../routes/account-router';
 import profileRoutes from '../routes/profile-router';
 import eventRoutes from '../routes/event-router';
+import postRoutes from '../routes/post-router';
 import googleAuthRoute from '../routes/google-login-route';
 
 const app = express();
@@ -19,6 +20,7 @@ app.use(loggerMiddleware);
 
 app.use(authRoutes);
 app.use(profileRoutes);
+app.use(postRoutes);
 app.use(eventRoutes);
 app.use(googleAuthRoute);
 

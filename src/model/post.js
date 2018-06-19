@@ -1,7 +1,10 @@
 'use strict';
 
 import mongoose from 'mongoose';
- 
+import HttpError from 'http-errors';
+import Event from './event';
+import Profile from './profile';
+
 const postSchema = mongoose.Schema({
   title: {
     type: String,
@@ -31,10 +34,52 @@ const postSchema = mongoose.Schema({
     ref: 'profile',
   },
   event: {
-    type: mongoose.Schema.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     required: true,
-    // unique: true,
   },
 });
+
+function savePreHook(done) {
+  return Profile.findById(this.profile)
+    .then((profileFound) => {
+      if (!profileFound) throw new HttpError(404, 'Profile not found');
+      profileFound.posts.push(this._id);
+      return profileFound.save();
+    })
+    .then(() => {
+      return Event.findById(this.event);
+    })
+    .then((eventFound) => {
+      if (!eventFound) throw new HttpError(404, 'Event not found');
+      eventFound.posts.push(this._id);
+      return eventFound.save();
+    })
+    .then(() => done())
+    .catch(done);
+}
+
+function removePostHook(document, next) {
+  Profile.findById(document.profile)
+    .then((profileFound) => {
+      if (!profileFound) throw new HttpError(500, 'Profile not found');
+      profileFound.posts = profileFound.posts.filter((post) => {
+        return post._id.toString() !== document._id.toString();
+      });
+      profileFound.save();
+      return Event.findById(document.event);
+    })
+    .then((eventFound) => {
+      if (!eventFound) throw new HttpError(500, 'Event not found');
+      eventFound.posts = eventFound.posts.filter((post) => {
+        return post._id.toString() !== document._id.toString();
+      });
+      eventFound.save();
+    })
+    .then(next)
+    .catch(next);
+}
+
+postSchema.pre('save', savePreHook);
+postSchema.post('remove', removePostHook);
 
 export default mongoose.model('post', postSchema);

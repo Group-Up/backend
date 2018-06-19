@@ -9,13 +9,12 @@ const pCreateProfileMock = () => {
   return pCreateAccountMock()
     .then((accountSetMock) => {
       resultMock.accountSetMock = accountSetMock;
-      
       return new Profile({
         bio: faker.lorem.words(10),
-        email: faker.internet.email(),
+        email: accountSetMock.account.email,
         profileImage: faker.random.image(),
-        username: faker.name.firstName(),
-        account: accountSetMock.account._id, // This line sets up the relationship
+        username: accountSetMock.account.username,
+        account: accountSetMock.account._id,
       }).save();
     })
     .then((profile) => {
