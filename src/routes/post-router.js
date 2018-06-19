@@ -38,17 +38,6 @@ postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, nex
     .catch(next);
 });
 
-postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
-  const options = { runValidators: true, new: true };
-  return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
-    .then((updatedPost) => {
-      logger.log(logger.INFO, '200 - Updating post');
-      return response.json(updatedPost);
-    })
-    .catch(next);
-});
-
 postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response, next) => {
   if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
@@ -59,6 +48,17 @@ postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response
     })
     .then((updatedPost) => {
       logger.log(logger.INFO, '200 - Adding like to post');
+      return response.json(updatedPost);
+    })
+    .catch(next);
+});
+
+postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
+  const options = { runValidators: true, new: true };
+  return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
+    .then((updatedPost) => {
+      logger.log(logger.INFO, '200 - Updating post');
       return response.json(updatedPost);
     })
     .catch(next);
