@@ -12,7 +12,7 @@ const s3Upload = (path, key) => {
     ACL: 'public-read',
     Body: fs.createReadStream(path), 
   };
-
+  
   return amazons3.upload(uploadOptions)
     .promise() // this comes from aws and calls the interal calllback of the upload method
     .then((response) => {
