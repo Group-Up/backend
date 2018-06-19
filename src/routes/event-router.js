@@ -27,4 +27,28 @@ eventRouter.post('/events', bearerAuthMiddleware, jsonParser, (request, response
     .catch(next);
 });
 
+eventRouter.put('/events/:id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  const options = { runValidators: true, new: true };
+  return Event.findByIdAndUpdate(request.params.id, request.body, options)
+    .then((updatedEvent) => {
+      if (!updatedEvent) {
+        return next(new HttpError(404, 'EVENT ROUTER - PUT - event to update not found'));
+      }
+      logger.log(logger.INFO, 'EVENT ROUTER - PUT - responding with a 200 status code');
+      return response.json(updatedEvent);
+    })
+    .catch(next);
+});
+
+eventRouter.delete('/events/:id', bearerAuthMiddleware, (request, response, next) => {
+  return Event.findByIdAndRemove(request.params.id)
+    .then((event) => {
+      if (!event) {
+        return next(new HttpError(404, 'EVENT ROUTER - DELETE - event not found'));
+      }
+      logger.log(logger.INFO, 'EVENT ROUTER - DELETE - responding with a 204 status code');
+      return response.sendStatus(204);
+    });
+});
+
 export default eventRouter;

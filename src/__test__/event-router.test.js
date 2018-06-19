@@ -13,8 +13,8 @@ describe('EVENT ROUTER', () => {
   afterAll(stopServer);
   afterEach(pRemoveEventMock);
 
-  describe('POST /events', () => {
-    test('should give a 200 status code for a successsful post', () => {
+  describe('POST EVENT', () => {
+    test('POST /events should give a 200 status code for a successsful post', () => {
       return pCreateProfileMock()
         .then((profileMock) => {
           const eventToPost = {
@@ -90,6 +90,50 @@ describe('EVENT ROUTER', () => {
             .catch((err) => {
               expect(err.status).toEqual(404);
             });
+        });
+    });
+  });
+
+  describe('UPDATE EVENT', () => {
+    test('PUT /event/:id should return a 200 status code for successful update', () => {
+      let eventToUpdate = null;
+      return pCreateEventMock()
+        .then((mockEvent) => {
+          eventToUpdate = mockEvent;
+          return superagent.put(`${apiURL}/events/${mockEvent.event._id}`)
+            .set('Authorization', `Bearer ${mockEvent.profile.accountSetMock.token}`)
+            .send({ title: 'Road Trip' });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.title).toEqual('Road Trip');
+          expect(response.body.description).toEqual(eventToUpdate.event.description);
+        });
+    });
+
+    test('should respond with a 404 code if the id is invalid', () => {
+      return pCreateEventMock()
+        .then((mockEvent) => {
+          return superagent.put(`${apiURL}/events/invalidEventId`)
+            .set('Authorization', `Bearer ${mockEvent.profile.accountSetMock.token}`)
+            .send({ title: 'Road Trip' });
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(404);
+        });
+    });
+  });
+
+  describe('DELETE EVENT', () => {
+    test('DELETE /events/:id should delete an event and return a 204 status code', () => {
+      return pCreateEventMock()
+        .then((mockEvent) => {
+          return superagent.delete(`${apiURL}/events/${mockEvent.event._id}`)
+            .set('Authorization', `Bearer ${mockEvent.profile.accountSetMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(204);
         });
     });
   });

@@ -6,11 +6,10 @@ import { pCreateAccountMock, pRemoveAccountMock } from './account-mock';
 
 const pCreateProfileMock = () => {
   const resultMock = {};
-
   return pCreateAccountMock()
     .then((accountSetMock) => {
       resultMock.accountSetMock = accountSetMock;
-
+      
       return new Profile({
         bio: faker.lorem.words(10),
         email: faker.internet.email(),
