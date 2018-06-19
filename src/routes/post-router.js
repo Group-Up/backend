@@ -1,8 +1,3 @@
-//   Stretch Goal:
-//      PUT /posts/likes/:post_id
-//        Input: post id
-//        Output: updated post
-
 'use strict';
 
 import { Router } from 'express';
