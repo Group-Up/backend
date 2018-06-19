@@ -54,4 +54,20 @@ describe('POST ROUTER', () => {
         expect(response.body[0].title).toEqual(mockPost.title);
       });
   });
+
+  test('PUT /posts/:post_id should return 200 status and updated post', () => {
+    let postToUpdate = null
+    return pCreatePostMock()
+      .then((postMock) => {
+        postToUpdate = postMock.post;
+        return superagent.put(`${apiUrl}/posts/${postToUpdate._id}`)
+          .set('Authorization', `Bearer ${postMock.token}`)
+          .send({ title: 'NEW TITLE' });
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body.title).toEqual('NEW TITLE');
+        expect(response.body.profile).toEqual(postToUpdate.profile.toString());
+      });
+  });
 });

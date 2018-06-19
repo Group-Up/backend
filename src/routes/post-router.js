@@ -1,16 +1,10 @@
 // Posts:
-//   POST /posts/:event_id
-//      Input: new post (title, etc.)
-//      Output: new post
 //   PUT /posts/:post_id
 //      Input: any changed information on post
 //      Output: updated post
 //   DELETE /posts/:post_id
 //      Input: post id
 //      Output: 204 status code
-//   GET /posts/:event_id
-//      Input: event id
-//      Output: all posts on that event
 //   Stretch Goal:
 //      PUT /posts/likes/:post_id
 //        Input: post id
@@ -51,8 +45,18 @@ postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, nex
   if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ event: request.params.event_id })
     .then((events) => {
-      console.log(events);
       return response.json(events);
+    })
+    .catch(next);
+});
+
+postRouter.put('/posts/:post_id/', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
+  const options = { runValidators: true, new: true };
+  return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
+    .then((updatedPost) => {
+      logger.log(logger.INFO, '200 - Updating post');
+      return response.json(updatedPost);
     })
     .catch(next);
 });
