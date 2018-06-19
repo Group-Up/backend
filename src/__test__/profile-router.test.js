@@ -82,4 +82,22 @@ describe('POST /profiles', () => {
         });
     });
   });
+
+  describe('PUT /profile', () => {
+    test('should return 200 code and updated profile', () => {
+      let profileToUpdate = null;
+      return pCreateProfileMock()
+        .then((profileMock) => {
+          profileToUpdate = profileMock.profile;
+          return superagent.put(`${apiURL}/profile`)
+            .set('Authorization', `Bearer ${profileMock.accountSetMock.token}`)
+            .send({ bio: 'UPDATE BIO' });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.bio).toEqual('UPDATE BIO');
+          expect(response.body._id).toEqual(profileToUpdate._id.toString());
+        });
+    });
+  });
 });

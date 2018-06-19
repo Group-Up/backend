@@ -1,6 +1,8 @@
 'use strict';
 
 import mongoose from 'mongoose';
+import HttpError from 'http-errors';
+import Account from './account';
 
 const profileSchema = mongoose.Schema({
   username: { 
@@ -40,5 +42,18 @@ const profileSchema = mongoose.Schema({
 }, {
   usePushEach: true,
 });
+
+function savePreHook(done) {
+  return Account.findById(this.account)
+    .then((accountFound) => {
+      if (!accountFound) throw new HttpError(404, 'Account not found');
+      accountFound.profile = this._id;
+      return accountFound.save();
+    })
+    .then(() => done())
+    .catch(done);
+}
+
+profileSchema.pre('save', savePreHook);
 
 export default mongoose.model('profile', profileSchema);

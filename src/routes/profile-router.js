@@ -28,6 +28,15 @@ profileRouter.post('/profiles', bearerAuthMiddleware, jsonParser, (request, resp
     .catch(next);
 });
 
+profileRouter.get('/profiles/me', bearerAuthMiddleware, (request, response, next) => {
+  return Profile.findOne({ account: request.account.id })
+    .then((profile) => {
+      logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
+      return response.json(profile);
+    })
+    .catch(next);
+});
+
 profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, next) => {
   return Profile.findById(request.params.id)
     .then((profile) => {
@@ -40,16 +49,17 @@ profileRouter.get('/profiles/:id', bearerAuthMiddleware, (request, response, nex
     .catch(next);
 });
 
-profileRouter.get('/profiles/me', bearerAuthMiddleware, (request, response, next) => {
-  return Profile.findOne({ account: request.account.id })
+profileRouter.put('/profile', bearerAuthMiddleware, jsonParser, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
+  console.log(request.account);
+  const options = { runValidators: true, new: true };
+  return Profile.findByIdAndUpdate(request.account.profile, request.body, options)
     .then((profile) => {
-      // if (!profile) {
-      //   return next(new HttpError(400, ' no profile AUTH - invalid request'));
-      // }
       logger.log(logger.INFO, 'Returning a 200 status code and requested Profile');
       return response.json(profile);
     })
     .catch(next);
 });
+
 
 export default profileRouter;
