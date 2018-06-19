@@ -2,7 +2,6 @@
 
 import mongoose from 'mongoose';
 import HttpError from 'http-errors';
-import logger from '../lib/logger';
 import Profile from './profile';
 
 const eventSchema = mongoose.Schema({
@@ -55,16 +54,16 @@ function savePreHook(done) {
       profileFound.events.push(this._id);
       return profileFound.save();
     })
-    .then((profile) => {
-      logger.log(logger.INFO, profile);
-      logger.log(logger.INFO, this._id);
-      return this.guests.forEach(guest => Profile.findOne({ email: guest })
+    .then(() => {
+      return Promise.all(this.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
           guestProfile.events.push(this._id);
           return guestProfile.save();
-        }));
+        })));
     })
-    .then(() => done())
+    .then(() => {
+      return done();
+    })
     .catch(done);
 }
 
@@ -75,16 +74,18 @@ function removePostHook(document, next) {
       profileFound.events = profileFound.events.filter((event) => {
         return event._id.toString() !== document._id.toString();
       });
-      profileFound.save();
+      return profileFound.save();
+    })
+    .then(() => {
       document.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
           guestProfile.events = guestProfile.events.filter((event) => {
             return event._id.toString() !== document._id.toString();
           });
-          guestProfile.save();
+          return guestProfile.save();
         }));
     })
-    .then(next)
+    .then(() => next())
     .catch(next);
 }
 

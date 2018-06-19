@@ -6,6 +6,8 @@ import { startServer, stopServer } from '../lib/server';
 import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
 import { pCreatePostMock, pRemovePostMock } from './lib/post-mock';
 
+// jest.setTimeout(10000);
+
 describe('POST ROUTER', () => {
   beforeAll(startServer);
   afterAll(stopServer);
@@ -72,7 +74,7 @@ describe('POST ROUTER', () => {
       });
   });
 
-  test('DELETE /posts/:post_id should return 204 status code', () => { // eslint-disable-line
+  test('DELETE /posts/:post_id should return 204 status code', () => {
     let eventToCompare = null;
     return pCreatePostMock()
       .then((postMock) => {

@@ -45,7 +45,8 @@ function savePreHook(done) {
   return Account.findById(this.account)
     .then((accountFound) => {
       if (!accountFound) throw new HttpError(404, 'Account not found');
-      accountFound.profile = this._id;
+      if (!accountFound.profile) accountFound.profile = this._id;
+      else return done();
       return accountFound.save();
     })
     .then(() => done())

@@ -68,13 +68,17 @@ postRouter.delete('/posts/:post_id', bearerAuthMiddleware, (request, response, n
   if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.findById(request.params.post_id)
     .then((post) => {
+      logger.log(logger.INFO, '______HITTING HERE 1______');
       return post.remove();
     })
     .then(() => {
       logger.log(logger.INFO, '204 - Successful delete');
       return response.sendStatus(204);
     })
-    .catch(next);
+    .catch((err) => {
+      logger.log(logger.INFO, '______HITTING HERE 10______');
+      return next(err);
+    });
 });
 
 export default postRouter;

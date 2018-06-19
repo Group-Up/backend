@@ -4,7 +4,7 @@ import logger from './logger';
 
 export default (error, request, response, next) => { // eslint-disable-line no-unused-vars
   logger.log(logger.ERROR, '__ERROR_MIDDLEWARE__');
-  logger.log(logger.ERROR, error);
+  logger.log(logger.ERROR, `ERROR: ${error}`);
 
   if (error.status) {
     logger.log(logger.INFO, `Responding with a ${error.status} code and message ${error.message}`);
@@ -26,7 +26,6 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
     return response.sendStatus(409);
   }
   if (errorMessage.includes('unauthorized')) {
-
     logger.log(logger.INFO, 'ERROR MIDDLEWARE: Responding with a 401 code');
     return response.sendStatus(401);
   }
