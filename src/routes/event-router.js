@@ -51,4 +51,25 @@ eventRouter.delete('/events/:id', bearerAuthMiddleware, (request, response, next
     });
 });
 
+eventRouter.get('/events/public', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
+  return Event.find({ isPublic: true })
+    .then((events) => {
+      logger.log(logger.INFO, '200 - EVENT ROUTER - GET PUBLIC');
+      return response.json(events);
+    })
+    .catch(next);
+});
+
+eventRouter.get('/events/:event_id', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
+  return Event.findById(request.params.event_id)
+    .then((foundEvent) => {
+      logger.log(logger.INFO, '200 - EVENT ROUTER - GET BY ID');
+      return response.json(foundEvent);
+    })
+    .catch(next);
+});
+
+
 export default eventRouter;

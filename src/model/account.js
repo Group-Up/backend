@@ -37,6 +37,10 @@ const accountSchema = mongoose.Schema({
     type: Date,
     default: () => new Date(),
   },
+  profile: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'profile',
+  },
 });
 
 function pVerifyPassword(password) {
