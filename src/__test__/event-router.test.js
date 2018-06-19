@@ -24,7 +24,6 @@ describe('EVENT ROUTER', () => {
             profile: profileMock.profile._id.toString(),
           };
           const { token } = profileMock.accountSetMock;
-
           return superagent.post(`${apiURL}/events`)
             .set('Authorization', `Bearer ${token}`)
             .send(eventToPost)

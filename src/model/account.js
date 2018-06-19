@@ -59,12 +59,10 @@ function pCreateLoginToken() {
 }
 
 
-accountSchema.methods.pCreateLoginToken = pCreateLoginToken;
 accountSchema.methods.pVerifyPassword = pVerifyPassword;
+accountSchema.methods.pCreateLoginToken = pCreateLoginToken;
 
 const Account = mongoose.model('account', accountSchema);
-
-// Hash variables: Salt, hashing algo(bcrypt), password, rounds 
 
 Account.create = (username, email, password) => {
   return bcrypt.hash(password, HASH_ROUNDS)

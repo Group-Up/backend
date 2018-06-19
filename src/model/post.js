@@ -33,7 +33,6 @@ const postSchema = mongoose.Schema({
   event: {
     type: mongoose.Schema.ObjectId,
     required: true,
-    // unique: true,
   },
 });
 
