@@ -39,8 +39,6 @@ const profileSchema = mongoose.Schema({
   friends: {
     type: Array,
   },
-}, {
-  usePushEach: true,
 });
 
 function savePreHook(done) {

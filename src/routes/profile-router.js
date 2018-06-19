@@ -31,10 +31,18 @@ profileRouter.post('/profiles', bearerAuthMiddleware, jsonParser, (request, resp
 
 profileRouter.get('/profile/events', bearerAuthMiddleware, (request, response, next) => {
   if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
-  return Event.find({ profile: request.account.profile })
-    .then((events) => {
-      logger.log(logger.INFO, '200 - getting user events');
-      return response.json(events);
+  const allEvents = [];
+  return Profile.findById(request.account.profile)
+    .then((profile) => {
+      return Promise.all(profile.events.map((eventID) => {
+        return Event.findById(eventID)
+          .then((eventFound) => {
+            allEvents.push(eventFound);
+          });
+      }))
+        .then(() => {
+          return response.json(allEvents);
+        });
     })
     .catch(next);
 });
@@ -70,6 +78,5 @@ profileRouter.put('/profile', bearerAuthMiddleware, jsonParser, (request, respon
     })
     .catch(next);
 });
-
 
 export default profileRouter;
