@@ -34,7 +34,9 @@ accountRouter.get('/login', basicAuthMiddleware, (request, response, next) => {
   return request.account.pCreateLoginToken()
     .then((token) => {
       logger.log(logger.INFO, 'LOGIN - AuthRouter responding with a 200 status and a Token');
-      return response.send({ token });
+      return response
+        .cookie('GU-Token', token)
+        .send({ token });
     })
     .catch(next);
 });
