@@ -18,7 +18,7 @@ const postSchema = mongoose.Schema({
     type: String,
   },
   isAnnouncement: {
-    type: String,
+    type: Boolean,
     default: false,
   },
   likes: {

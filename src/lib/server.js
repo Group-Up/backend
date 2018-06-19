@@ -1,6 +1,6 @@
 'use strict';
 
-// import cors from 'cors';
+import cors from 'cors';
 import express from 'express';
 import mongoose from 'mongoose';
 import logger from './logger';
@@ -9,16 +9,18 @@ import errorMiddleware from './error-middleware';
 import authRoutes from '../routes/account-router';
 import profileRoutes from '../routes/profile-router';
 import eventRoutes from '../routes/event-router';
+import googleAuthRoute from '../routes/google-login-route';
 
 const app = express();
 let server = null;
 
-// app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
-app.use(loggerMiddleware); // logger middleware at the app-level
+app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
+app.use(loggerMiddleware);
 
 app.use(authRoutes);
 app.use(profileRoutes);
 app.use(eventRoutes);
+app.use(googleAuthRoute);
 
 app.all('*', (request, response) => {
   logger.log(logger.INFO, 'Returning a 404 from the catch/all default route');
