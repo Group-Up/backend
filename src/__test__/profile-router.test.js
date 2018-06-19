@@ -4,13 +4,17 @@ import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
 import { pCreateAccountMock } from './lib/account-mock';
 import { pRemoveProfileMock, pCreateProfileMock } from './lib/profile-mock';
+import { pCreateEventMock, pRemoveEventMock } from './lib/event-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
 describe('POST /profiles', () => {
   beforeAll(startServer);
   afterAll(stopServer);
-  afterEach(pRemoveProfileMock);
+  afterEach(() => {
+    pRemoveEventMock();
+    pRemoveProfileMock();
+  });
 
   test('POST /profiles should return a 200 status code if successful and the newly created profile', () => {
     let accountMock = null;
@@ -97,6 +101,23 @@ describe('POST /profiles', () => {
           expect(response.status).toEqual(200);
           expect(response.body.bio).toEqual('UPDATE BIO');
           expect(response.body._id).toEqual(profileToUpdate._id.toString());
+        });
+    });
+  });
+
+  describe('GET /profile/events', () => {
+    test('should return 200 status and all events on profile', () => {
+      let eventToCompare = null;
+      return pCreateEventMock()
+        .then((resultMock) => {
+          eventToCompare = resultMock.event;
+          return superagent.get(`${apiURL}/profile/events`)
+            .set('Authorization', `Bearer ${resultMock.profile.accountSetMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body).toHaveLength(1);
+          expect(response.body[0]._id).toEqual(eventToCompare._id.toString());
         });
     });
   });
