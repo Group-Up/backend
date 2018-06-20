@@ -1,20 +1,23 @@
 'use strict';
 
 import faker from 'faker';
-import { pCreateAccountMock } from './account-mock';
-import Image from '../../model/image';
+import Post from '../../model/post';
 import Account from '../../model/account';
+import { pCreateEventMock } from './event-mock';
 
-const pCreateImageMock = () => {
+const pCreatePostImageMock = () => {
   const resultMock = {};
-  return pCreateAccountMock()
-    .then((mockAcctResponse) => {
-      resultMock.accountMock = mockAcctResponse;
+  return pCreateEventMock()
+    .then((mockEventResponse) => {
+      resultMock.eventMock = mockEventResponse.event;
+      resultMock.token = mockEventResponse.profile.accountSetMock.token;
 
-      return new Image({
-        caption: faker.lorem.words(5),
-        url: faker.random.image(),
-        account: resultMock.accountMock.account._id,
+      return new Post({
+        title: faker.lorem.words(5),
+        imageUrl: faker.random.image(),
+        profile: mockEventResponse.profile.profile._id,
+        event: resultMock.eventMock._id,
+        type: 'photo',
       }).save();
     })
     .then((image) => {
@@ -23,6 +26,6 @@ const pCreateImageMock = () => {
     });
 };
 
-const pRemoveImageMock = () => Promise.all([Account.remove({}), Image.remove({})]);
+const pRemovePostImageMock = () => Promise.all([Account.remove({}), Post.remove({})]);
 
-export { pCreateImageMock, pRemoveImageMock };
+export { pCreatePostImageMock, pRemovePostImageMock };
