@@ -12,7 +12,7 @@
   },
   "jest": {
     "setupFiles": [
-      "<rootDir>/src/__test__/lib/jest-setup.js"
+      "<rootDir>/src/__test__/lib/test.env.js"
     ]
   },
   "repository": {
