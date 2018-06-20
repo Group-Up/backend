@@ -33,6 +33,7 @@ const getContacts = (user, imageUrl) => {
         profileImage: imageUrl,
         account: user.id,
         friends: contacts,
+        bio: '\n',
       }).save();
     });
 };
