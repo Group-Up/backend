@@ -28,12 +28,14 @@ const profileSchema = mongoose.Schema({
   },
   events: [
     {
-      type: mongoose.Schema.Types.ObjectId, ref: 'event',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'event',
     },
   ],
   posts: [
     {
-      type: mongoose.Schema.Types.ObjectId, ref: 'post',
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'post',
     },
   ],
   friends: {
