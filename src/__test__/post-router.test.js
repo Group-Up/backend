@@ -28,6 +28,7 @@ describe('POST ROUTER', () => {
             title: 'Test post',
             description: 'Testing!',
             profile: mocks.profile._id,
+            type: 'text',
           });
       })
       .then((response) => {
