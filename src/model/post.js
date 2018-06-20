@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import HttpError from 'http-errors';
 import Event from './event';
 import Profile from './profile';
-import logger from '../lib/logger';
 
 const postSchema = mongoose.Schema({
   title: {
@@ -44,7 +43,9 @@ function savePreHook(done) {
   return Profile.findById(this.profile)
     .then((profileFound) => {
       if (!profileFound) throw new HttpError(400, 'Profile not found');
-      profileFound.posts.push(this._id);
+      if (profileFound.posts.indexOf(this._id) < 0) {
+        profileFound.posts.push(this._id);
+      }
       return profileFound.save();
     })
     .then(() => {
@@ -52,7 +53,9 @@ function savePreHook(done) {
     })
     .then((eventFound) => {
       if (!eventFound) throw new HttpError(400, 'Event not found');
-      eventFound.posts.push(this._id);
+      if (eventFound.posts.indexOf(this._id) < 0) {
+        eventFound.posts.push(this._id);
+      }
       return eventFound.save();
     })
     .then(() => done())
