@@ -1,6 +1,8 @@
 .idea/
 db/
 build/
+**.env
+.*.env
 
 # Created by https://www.gitignore.io/api/vim,node,macos,linux,windows,webstorm,visualstudiocode
 
