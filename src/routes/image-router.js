@@ -6,7 +6,8 @@ import HttpError from 'http-errors';
 // import logger from '../lib/logger';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 import Image from '../model/image';
-import { s3Upload, s3Remove } from '../lib/s3';
+// import { s3Upload, s3Remove } from '../lib/s3';
+import { s3Upload } from '../lib/s3';
 
 const multerUpload = multer({ dest: `${__dirname}/../temp` });
 

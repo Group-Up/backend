@@ -59,7 +59,7 @@ function savePreHook(done) {
     .then(() => {
       return Promise.all(this.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
-          if (!guestProfile.events.indexOf(this._id) < 0) {
+          if (guestProfile.events.indexOf(this._id) < 0) {
             guestProfile.events.push(this._id);
           }
           return guestProfile.save();
@@ -81,13 +81,13 @@ function removeEventHook(document, next) {
       return profileFound.save();
     })
     .then(() => {
-      document.guests.map(guest => Profile.findOne({ email: guest })
+      return Promise.all(document.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
           guestProfile.events = guestProfile.events.filter((event) => {
             return event._id.toString() !== document._id.toString();
           });
           return guestProfile.save();
-        }));
+        })));
     })
     .then(() => next())
     .catch(next);

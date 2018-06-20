@@ -12,7 +12,6 @@ const postRouter = new Router();
 const jsonParser = json();
 
 postRouter.post('/posts/:event_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Profile.findOne({ email: request.account.email })
     .then((profile) => {
       if (!profile) return next(new HttpError(400, 'Profile not found'));
@@ -30,7 +29,6 @@ postRouter.post('/posts/:event_id', bearerAuthMiddleware, jsonParser, (request, 
 });
 
 postRouter.get('/posts/me', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ profile: request.account.profile })
     .then((posts) => {
       return response.json(posts);
@@ -39,7 +37,6 @@ postRouter.get('/posts/me', bearerAuthMiddleware, (request, response, next) => {
 });
 
 postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ event: request.params.event_id })
     .then((events) => {
       return response.json(events);
@@ -48,7 +45,6 @@ postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, nex
 });
 
 postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
   return Post.findById(request.params.post_id)
     .then((foundPost) => {
@@ -63,7 +59,6 @@ postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response
 });
 
 postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
   return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
     .then((updatedPost) => {
@@ -74,7 +69,6 @@ postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, re
 });
 
 postRouter.delete('/posts/:post_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.findById(request.params.post_id)
     .then((post) => {
       return post.remove();

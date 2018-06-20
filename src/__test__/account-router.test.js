@@ -78,4 +78,26 @@ describe('ACCOUNT Router', () => {
         expect(err.status).toEqual(400);
       });
   });
+  test('GET /login should return 400 if no password sent', () => {
+    return pCreateAccountMock()
+      .then((mock) => {
+        return superagent.get(`${apiURL}/login`)
+          .auth(mock.request.username);
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+      });
+  });
+  test('GET /login should return 404 if invalid user sent', () => {
+    return pCreateAccountMock()
+      .then((mock) => {
+        return superagent.get(`${apiURL}/login`)
+          .auth('badusername', mock.request.password);
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(404);
+      });
+  });
 });
