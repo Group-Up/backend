@@ -3,7 +3,6 @@
 import mongoose from 'mongoose';
 import HttpError from 'http-errors';
 import Profile from './profile';
-import logger from '../lib/logger';
 
 const eventSchema = mongoose.Schema({
   title: {
