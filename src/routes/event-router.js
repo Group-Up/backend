@@ -41,11 +41,12 @@ eventRouter.put('/events/:id', bearerAuthMiddleware, jsonParser, (request, respo
 });
 
 eventRouter.delete('/events/:id', bearerAuthMiddleware, (request, response, next) => {
-  return Event.findByIdAndRemove(request.params.id)
+  return Event.findById(request.params.id)
     .then((event) => {
-      if (!event) {
-        return next(new HttpError(404, 'EVENT ROUTER - DELETE - event not found'));
-      }
+      if (!event) return next(new HttpError(404, 'EVENT ROUTER - DELETE - event not found'));
+      return event.remove();
+    })
+    .then(() => {
       logger.log(logger.INFO, 'EVENT ROUTER - DELETE - responding with a 204 status code');
       return response.sendStatus(204);
     });

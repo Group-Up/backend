@@ -29,6 +29,15 @@ postRouter.post('/posts/:event_id', bearerAuthMiddleware, jsonParser, (request, 
     .catch(next);
 });
 
+postRouter.get('/posts/me', bearerAuthMiddleware, (request, response, next) => {
+  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
+  return Post.find({ profile: request.account.profile })
+    .then((posts) => {
+      return response.json(posts);
+    })
+    .catch(next);
+});
+
 postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, next) => {
   if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ event: request.params.event_id })
@@ -76,5 +85,6 @@ postRouter.delete('/posts/:post_id', bearerAuthMiddleware, (request, response, n
     })
     .catch(next);
 });
+
 
 export default postRouter;

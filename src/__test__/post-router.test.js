@@ -56,6 +56,21 @@ describe('POST ROUTER', () => {
       });
   });
 
+  test('GET /posts/me should return 200 status and all posts for profile', () => {
+    let mockPost = null;
+    return pCreatePostMock()
+      .then((postMock) => {
+        mockPost = postMock.post;
+        return superagent.get(`${apiUrl}/posts/me`)
+          .set('Authorization', `Bearer ${postMock.token}`);
+      })
+      .then((response) => {
+        expect(response.status).toEqual(200);
+        expect(response.body).toHaveLength(1);
+        expect(response.body[0].title).toEqual(mockPost.title);
+      });
+  });
+
   test('PUT /posts/:post_id should return 200 status and updated post', () => {
     let postToUpdate = null
     return pCreatePostMock()
@@ -72,7 +87,7 @@ describe('POST ROUTER', () => {
       });
   });
 
-  test('DELETE /posts/:post_id should return 204 status code', () => { // eslint-disable-line
+  test('DELETE /posts/:post_id should return 204 status code', () => {
     let eventToCompare = null;
     return pCreatePostMock()
       .then((postMock) => {
