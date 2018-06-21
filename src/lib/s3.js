@@ -29,16 +29,4 @@ const s3Upload = (path, key) => {
     });
 };
 
-const s3Remove = (key) => {
-  const aws = require('aws-sdk');
-  const amazons3 = new aws.S3();
-
-  const removeOptions = {
-    Key: key,
-    Bucket: process.env.AWS_BUCKET,
-  };
-
-  return amazons3.deleteObject(removeOptions).promise();
-};
-
-export { s3Upload, s3Remove };
+export default s3Upload;

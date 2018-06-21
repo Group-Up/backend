@@ -4,7 +4,7 @@ import multer from 'multer';
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
-import { s3Upload } from '../lib/s3';
+import s3Upload from '../lib/s3';
 import Post from '../model/post';
 import logger from '../lib/logger';
 import Profile from '../model/profile';
@@ -14,7 +14,6 @@ const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const postRouter = new Router();
 const jsonParser = json({ limit: '50mb' });
 
-// TODO: Sarah -- do we need a delete route specifically for images? if so, add pls
 postRouter.post('/posts/image', bearerAuthMiddleware, multerUpload.any(), (request, response, next) => {
   if (!request.body.caption || request.files.length > 1 || request.files[0].fieldname !== 'image') {
     return next(new HttpError(400, 'IMAGE ROUTER ERROR, invalid request'));
