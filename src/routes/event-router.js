@@ -31,9 +31,6 @@ eventRouter.put('/events/:id', bearerAuthMiddleware, jsonParser, (request, respo
   const options = { runValidators: true, new: true };
   return Event.findByIdAndUpdate(request.params.id, request.body, options)
     .then((updatedEvent) => {
-      if (!updatedEvent) {
-        return next(new HttpError(404, 'EVENT ROUTER - PUT - event to update not found'));
-      }
       logger.log(logger.INFO, 'EVENT ROUTER - PUT - responding with a 200 status code');
       return response.json(updatedEvent);
     })
@@ -53,7 +50,6 @@ eventRouter.delete('/events/:id', bearerAuthMiddleware, (request, response, next
 });
 
 eventRouter.get('/events/public', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Event.find({ isPublic: true })
     .then((events) => {
       logger.log(logger.INFO, '200 - EVENT ROUTER - GET PUBLIC');
@@ -63,7 +59,6 @@ eventRouter.get('/events/public', bearerAuthMiddleware, (request, response, next
 });
 
 eventRouter.get('/events/:event_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Event.findById(request.params.event_id)
     .then((foundEvent) => {
       logger.log(logger.INFO, '200 - EVENT ROUTER - GET BY ID');

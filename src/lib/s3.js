@@ -1,6 +1,6 @@
 'use strict';
 
-import fs from 'fs-extra'; // used to remove documents
+import fs from 'fs-extra';
 
 const s3Upload = (path, key) => {
   const aws = require('aws-sdk');
@@ -14,12 +14,12 @@ const s3Upload = (path, key) => {
   };
   
   return amazons3.upload(uploadOptions)
-    .promise() // this comes from aws and calls the interal calllback of the upload method
+    .promise() 
     .then((response) => {
       return fs.remove(path)
         .then(() => {
           return response.Location;
-        }) // response.location maps to the upload url link location
+        }) 
         .catch(err => Promise.reject(err));
     })
     .catch((err) => {

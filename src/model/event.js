@@ -1,7 +1,6 @@
 'use strict';
 
 import mongoose from 'mongoose';
-import HttpError from 'http-errors';
 import Profile from './profile';
 
 const eventSchema = mongoose.Schema({
@@ -50,7 +49,6 @@ const eventSchema = mongoose.Schema({
 function savePreHook(done) {
   return Profile.findById(this.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(404, 'Profile not found');
       if (profileFound.events.indexOf(this._id) < 0) {
         profileFound.events.push(this._id);
       }
@@ -74,7 +72,6 @@ function savePreHook(done) {
 function removeEventHook(document, next) {
   Profile.findById(document.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
       profileFound.events = profileFound.events.filter((event) => {
         return event._id.toString() !== document._id.toString();
       });
