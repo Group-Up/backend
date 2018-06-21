@@ -136,5 +136,5 @@ JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winsto
  * 6-20-2018 4:20pm - Created custom cards, Title, File Upload, & List/Description - hyperlinks
  * 6-20-2018 7:54pm - Implemented Public vs. Private Event Functionality.
 
-
+#### Model Relationships
 
