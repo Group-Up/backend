@@ -137,5 +137,4 @@ JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winsto
  * 6-20-2018 7:54pm - Implemented Public vs. Private Event Functionality.
 
 
-#### Model Relationships
 
