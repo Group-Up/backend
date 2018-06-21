@@ -47,6 +47,7 @@ const eventSchema = mongoose.Schema({
 });
 
 function savePreHook(done) {
+  // Carl -- prehook is needed to add the event to the creator's events array
   return Profile.findById(this.profile)
     .then((profileFound) => {
       if (profileFound.events.indexOf(this._id) < 0) {
@@ -70,6 +71,7 @@ function savePreHook(done) {
 }
 
 function removeEventHook(document, next) {
+  // Carl -- posthook is needed to remove the event._id from the user's events array
   Profile.findById(document.profile)
     .then((profileFound) => {
       profileFound.events = profileFound.events.filter((event) => {
