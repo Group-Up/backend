@@ -49,7 +49,7 @@ eventRouter.delete('/events/:id', bearerAuthMiddleware, (request, response, next
     });
 });
 
-eventRouter.get('/events/public', bearerAuthMiddleware, (request, response, next) => {
+eventRouter.get('/events/public', (request, response, next) => {
   return Event.find({ isPublic: true })
     .then((events) => {
       logger.log(logger.INFO, '200 - EVENT ROUTER - GET PUBLIC');

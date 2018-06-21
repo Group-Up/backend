@@ -100,4 +100,19 @@ describe('ACCOUNT Router', () => {
         expect(err.status).toEqual(404);
       });
   });
+
+  describe('Catch all route', () => {
+    test('should return a 404 when trying to access the catchall route', () => {
+      return superagent.post(`${apiURL}/invalidEndpoint`)
+        .send({
+          username: 'testuser',
+          email: 'testuser@testuser.com',
+          password: 'testuserpassword',
+        })
+        .then(Promise.reject)
+        .catch((err) => {
+          expect(err.status).toEqual(404);
+        });
+    });
+  });
 });

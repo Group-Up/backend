@@ -11,6 +11,5 @@ if (isAwsMock) {
   process.env.AWS_ACCESS_KEY_ID = 'fakekeyinsidetestenv';
   require('./setup');
 } else {
-  // remember to set your .env vars and add .env to .gitignore
   require('dotenv').config();
 }
