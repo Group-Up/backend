@@ -2,8 +2,7 @@
 
 import faker from 'faker';
 import Post from '../../model/post';
-import Account from '../../model/account';
-import { pCreateEventMock } from './event-mock';
+import { pCreateEventMock, pRemoveEventMock } from './event-mock';
 
 const pCreatePostImageMock = () => {
   const resultMock = {};
@@ -11,7 +10,6 @@ const pCreatePostImageMock = () => {
     .then((mockEventResponse) => {
       resultMock.eventMock = mockEventResponse.event;
       resultMock.token = mockEventResponse.profile.accountSetMock.token;
-
       return new Post({
         title: faker.lorem.words(5),
         imageUrl: faker.random.image(),
@@ -26,6 +24,6 @@ const pCreatePostImageMock = () => {
     });
 };
 
-const pRemovePostImageMock = () => Promise.all([Account.remove({}), Post.remove({})]);
+const pRemovePostImageMock = () => Promise.all([Post.remove({}), pRemoveEventMock()]);
 
 export { pCreatePostImageMock, pRemovePostImageMock };

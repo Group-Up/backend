@@ -1,7 +1,6 @@
 'use strict';
 
 import mongoose from 'mongoose';
-import HttpError from 'http-errors';
 import Event from './event';
 import Profile from './profile';
 
@@ -46,7 +45,6 @@ const postSchema = mongoose.Schema({
 function savePreHook(done) {
   return Profile.findById(this.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
       if (profileFound.posts.indexOf(this._id) < 0) {
         profileFound.posts.push(this._id);
       }
@@ -56,7 +54,6 @@ function savePreHook(done) {
       return Event.findById(this.event);
     })
     .then((eventFound) => {
-      if (!eventFound) throw new HttpError(400, 'Event not found');
       if (eventFound.posts.indexOf(this._id) < 0) {
         eventFound.posts.push(this._id);
       }
@@ -69,7 +66,6 @@ function savePreHook(done) {
 function removePostHook(document, next) {
   Profile.findById(document.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
       profileFound.posts = profileFound.posts.filter((post) => {
         return post._id.toString() !== document._id.toString();
       });
@@ -79,7 +75,6 @@ function removePostHook(document, next) {
       return Event.findById(document.event);
     })
     .then((eventFound) => {
-      if (!eventFound) throw new HttpError(400, 'Event not found');
       eventFound.posts = eventFound.posts.filter((post) => {
         return post._id.toString() !== document._id.toString();
       });

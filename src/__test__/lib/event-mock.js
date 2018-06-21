@@ -42,9 +42,34 @@ const pCreatePublicEventMock = () => {
     });
 };
 
+const pCreateEventWithGuests = () => {
+  const resultMock = {};
+  return pCreateProfileMock()
+    .then((createdProfile) => {
+      resultMock.profile = createdProfile.profile;
+      resultMock.token = createdProfile.accountSetMock.token;
+      resultMock.token = createdProfile.accountSetMock.token;
+      return pCreateProfileMock();
+    })
+    .then((secondProfile) => {
+      resultMock.guestEmail = secondProfile.profile.email;
+      return new Event({
+        title: faker.lorem.words(5),
+        description: faker.lorem.words(10),
+        location: faker.lorem.words(2),
+        profile: resultMock.profile._id,
+        guests: [resultMock.guestEmail],
+      }).save();
+    })
+    .then((event) => {
+      resultMock.event = event;
+      return resultMock;
+    });
+};
+
 const pRemoveEventMock = () => Promise.all([
   Event.remove({}),
   pRemoveProfileMock(),
 ]);
 
-export { pCreateEventMock, pRemoveEventMock, pCreatePublicEventMock };
+export { pCreateEventMock, pRemoveEventMock, pCreatePublicEventMock, pCreateEventWithGuests };

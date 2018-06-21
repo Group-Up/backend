@@ -16,7 +16,7 @@ export default (request, response, next) => {
   
   const [username, password] = stringAuthHeader.split(':');
   if (!username || !password) {
-    return next(new Error(400, 'AUTH BASIC - no user or password invalid request'));
+    return next(new HttpError(400, 'AUTH BASIC - no user or password invalid request'));
   }
   
   return Account.findOne({ username })

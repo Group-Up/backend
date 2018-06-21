@@ -49,7 +49,7 @@ function pVerifyPassword(password) {
       if (!result) {
         throw new HttpError(400, 'AUTH - invalid request');
       }
-      return this; // returns entire account
+      return this;
     });
 }
 
@@ -59,7 +59,7 @@ function pCreateLoginToken() {
     .then((account) => {
       return jsonWebToken.sign({ tokenSeed: account.tokenSeed }, process.env.HASH_SECRET_STRING);
     })
-    .catch(() => new HttpError('400'));
+    .catch(err => new HttpError('400', err));
 }
 
 

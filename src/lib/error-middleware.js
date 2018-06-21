@@ -25,10 +25,6 @@ export default (error, request, response, next) => { // eslint-disable-line no-u
     logger.log(logger.INFO, 'ERROR MIDDLEWARE: Responding with a 409 code');
     return response.sendStatus(409);
   }
-  if (errorMessage.includes('unauthorized')) {
-    logger.log(logger.INFO, 'ERROR MIDDLEWARE: Responding with a 401 code');
-    return response.sendStatus(401);
-  }
 
   logger.log(logger.ERROR, 'ERROR MIDDLEWARE: Responding with a 500 error code');
   logger.log(logger.ERROR, error);

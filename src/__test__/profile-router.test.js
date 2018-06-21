@@ -87,6 +87,22 @@ describe('POST /profiles', () => {
     });
   });
 
+  describe('GET /profiles/me', () => {
+    test('should return 200 and profile', () => {
+      let profileToCompare = null;
+      return pCreateProfileMock()
+        .then((mockProfile) => {
+          profileToCompare = mockProfile.profile;
+          return superagent.get(`${apiURL}/profiles/me`)
+            .set('Authorization', `Bearer ${mockProfile.accountSetMock.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.bio).toEqual(profileToCompare.bio);
+        });
+    });
+  });
+
   describe('PUT /profile', () => {
     test('should return 200 code and updated profile', () => {
       let profileToUpdate = null;
