@@ -43,6 +43,8 @@ const postSchema = mongoose.Schema({
 });
 
 function savePreHook(done) {
+  // Carl -- prehook is needed to add the post._id to the user's profile.posts array
+  // and the corresponding events array of posts.
   return Profile.findById(this.profile)
     .then((profileFound) => {
       if (profileFound.posts.indexOf(this._id) < 0) {
@@ -64,6 +66,8 @@ function savePreHook(done) {
 }
 
 function removePostHook(document, next) {
+  // Carl -- posthook is needed to remove the post._id from the user's posts array
+  // and the corresponding events array of posts.
   Profile.findById(document.profile)
     .then((profileFound) => {
       profileFound.posts = profileFound.posts.filter((post) => {

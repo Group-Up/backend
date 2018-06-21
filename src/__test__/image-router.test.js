@@ -3,7 +3,6 @@
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
 import { pCreatePostImageMock, pRemovePostImageMock } from './lib/image-mock';
-// import { pRemovePostImageMock } from './lib/image-mock';
 import { pCreateEventMock } from './lib/event-mock';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
@@ -47,7 +46,6 @@ describe('IMAGE ROUTER', () => {
         });
     });
 
-    // TODO: Sarah -- do we need a delete route specifically for images? if so, replace below
     test('should return 204 status if image is successfully deleted', () => {
       return pCreatePostImageMock()
         .then((resultMock) => {
