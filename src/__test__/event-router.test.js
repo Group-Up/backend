@@ -213,8 +213,7 @@ describe('EVENT ROUTER', () => {
       return pCreatePublicEventMock()
         .then((resultMock) => {
           publicEvent = resultMock.event;
-          return superagent.get(`${apiURL}/events/public`)
-            .set('Authorization', `Bearer ${resultMock.token}`);
+          return superagent.get(`${apiURL}/events/public`);
         })
         .then((response) => {
           expect(response.status).toEqual(200);
