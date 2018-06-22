@@ -15,7 +15,7 @@
 
 The GroupUp application provides users with a common virtual meeting place where they can plan events, update agendas, send messages and keep track of any information a group would enjoy having easy access to. The user signs up for an account and creates a profile to interact in the application. Users can easily invite friends, family or coworkers by accessing their Google contacts directly from the GroupUp application.  Within your custom group, share locations you plan to meet, share photos of an event and message all the members in your group at once. The application is built with a RESTful HTTP server that utilizes basic authentication using Express and Google Oath. Mongoose and MongoDB are used for the Schema and database functionality. GroupUp will make any company event, convention, road-trip or party a breeze to plan.
 
-#### In Your.env File:
+#### In Your .env File:
 
  * PORT: defaults to 3000
  * NODE_ENV: set to development
