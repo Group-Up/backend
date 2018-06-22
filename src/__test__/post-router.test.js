@@ -28,6 +28,7 @@ describe('POST ROUTER', () => {
             title: 'Test post',
             description: 'Testing!',
             profile: mocks.profile._id,
+            type: 'text',
           });
       })
       .then((response) => {
@@ -38,6 +39,56 @@ describe('POST ROUTER', () => {
         expect(response.body.timestamp).toBeTruthy();
         expect(response.body.isAnnouncement).toBe(false);
         expect(response.body.event).toEqual(mocks.event._id.toString());
+      });
+  });
+  test('POST should return 400 if no auth sent', () => {
+    return pCreateEventMock()
+      .then((eventSetMock) => {
+        return superagent.post(`${apiUrl}/posts/${eventSetMock.event._id}`)
+          .send({
+            title: 'test',
+            description: 'test',
+            profile: eventSetMock.profile.profile._id,
+            type: 'photo',
+          });
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(400);
+      });
+  });
+  test('POST should return 401 if bad auth sent', () => {
+    return pCreateEventMock()
+      .then((eventSetMock) => {
+        return superagent.post(`${apiUrl}/posts/${eventSetMock.event._id}`)
+          .set('Authorization', 'Bearer')
+          .send({
+            title: 'test',
+            description: 'test',
+            profile: eventSetMock.profile.profile._id,
+            type: 'photo',
+          });
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(401);
+      });
+  });
+  test('POST should return 400 if bad token sent', () => {
+    return pCreateEventMock()
+      .then((eventSetMock) => {
+        return superagent.post(`${apiUrl}/posts/${eventSetMock.event._id}`)
+          .set('Authorization', 'Bearer 4567890')
+          .send({
+            title: 'test',
+            description: 'test',
+            profile: eventSetMock.profile.profile._id,
+            type: 'photo',
+          });
+      })
+      .then(Promise.reject)
+      .catch((err) => {
+        expect(err.status).toEqual(400);
       });
   });
 
@@ -72,7 +123,7 @@ describe('POST ROUTER', () => {
   });
 
   test('PUT /posts/:post_id should return 200 status and updated post', () => {
-    let postToUpdate = null
+    let postToUpdate = null;
     return pCreatePostMock()
       .then((postMock) => {
         postToUpdate = postMock.post;

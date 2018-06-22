@@ -16,6 +16,7 @@ const pCreatePostMock = () => {
         title: faker.lorem.words(5),
         profile: resultsMock.profile._id,
         event: resultsMock.event._id,
+        type: 'text',
       }).save();
     })
     .then((newPost) => {

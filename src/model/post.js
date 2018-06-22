@@ -1,10 +1,8 @@
 'use strict';
 
 import mongoose from 'mongoose';
-import HttpError from 'http-errors';
 import Event from './event';
 import Profile from './profile';
-import logger from '../lib/logger';
 
 const postSchema = mongoose.Schema({
   title: {
@@ -17,6 +15,10 @@ const postSchema = mongoose.Schema({
   timestamp: {
     type: Date,
     default: () => new Date(),
+  },
+  type: {
+    type: String,
+    required: true,
   },
   description: {
     type: String,
@@ -41,18 +43,22 @@ const postSchema = mongoose.Schema({
 });
 
 function savePreHook(done) {
+  // Carl -- prehook is needed to add the post._id to the user's profile.posts array
+  // and the corresponding events array of posts.
   return Profile.findById(this.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
-      profileFound.posts.push(this._id);
+      if (profileFound.posts.indexOf(this._id) < 0) {
+        profileFound.posts.push(this._id);
+      }
       return profileFound.save();
     })
     .then(() => {
       return Event.findById(this.event);
     })
     .then((eventFound) => {
-      if (!eventFound) throw new HttpError(400, 'Event not found');
-      eventFound.posts.push(this._id);
+      if (eventFound.posts.indexOf(this._id) < 0) {
+        eventFound.posts.push(this._id);
+      }
       return eventFound.save();
     })
     .then(() => done())
@@ -60,9 +66,10 @@ function savePreHook(done) {
 }
 
 function removePostHook(document, next) {
+  // Carl -- posthook is needed to remove the post._id from the user's posts array
+  // and the corresponding events array of posts.
   Profile.findById(document.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
       profileFound.posts = profileFound.posts.filter((post) => {
         return post._id.toString() !== document._id.toString();
       });
@@ -72,7 +79,6 @@ function removePostHook(document, next) {
       return Event.findById(document.event);
     })
     .then((eventFound) => {
-      if (!eventFound) throw new HttpError(400, 'Event not found');
       eventFound.posts = eventFound.posts.filter((post) => {
         return post._id.toString() !== document._id.toString();
       });

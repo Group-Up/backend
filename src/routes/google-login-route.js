@@ -26,13 +26,13 @@ const getContacts = (user, imageUrl) => {
         contacts[index].name = contact.displayName;
       });
       profile.friends = contacts;
-      console.log('MAKING A NEW PROFILE -- account', user.id);
       return new Profile({
         username: user.username,
         email: user.email,
         profileImage: imageUrl,
         account: user.id,
         friends: contacts,
+        bio: '\n',
       }).save();
     });
 };

@@ -1,21 +1,42 @@
 'use strict';
 
+import multer from 'multer';
 import { Router } from 'express';
 import { json } from 'body-parser';
 import HttpError from 'http-errors';
+import s3Upload from '../lib/s3';
 import Post from '../model/post';
-import Profile from '../model/profile';
 import logger from '../lib/logger';
+import Profile from '../model/profile';
 import bearerAuthMiddleware from '../lib/bearer-auth-middleware';
 
+const multerUpload = multer({ dest: `${__dirname}/../temp` });
 const postRouter = new Router();
-const jsonParser = json();
+const jsonParser = json({ limit: '50mb' });
+
+postRouter.post('/posts/image', bearerAuthMiddleware, multerUpload.any(), (request, response, next) => {
+  if (!request.body.caption || request.files.length > 1 || request.files[0].fieldname !== 'image') {
+    return next(new HttpError(400, 'IMAGE ROUTER ERROR, invalid request'));
+  } 
+  const file = request.files[0];
+  const key = `${file.filename}.${file.originalname}`;
+  return s3Upload(file.path, key)
+    .then((awsUrl) => {
+      return new Post({
+        title: request.body.caption,
+        type: 'photo',
+        profile: request.account.profile,
+        imageUrl: awsUrl,
+        event: request.body.event,
+      }).save();
+    })
+    .then(post => response.json(post))
+    .catch(next);
+});
 
 postRouter.post('/posts/:event_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Profile.findOne({ email: request.account.email })
     .then((profile) => {
-      if (!profile) return next(new HttpError(400, 'Profile not found'));
       return new Post({
         ...request.body,
         event: request.params.event_id,
@@ -30,7 +51,6 @@ postRouter.post('/posts/:event_id', bearerAuthMiddleware, jsonParser, (request, 
 });
 
 postRouter.get('/posts/me', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ profile: request.account.profile })
     .then((posts) => {
       return response.json(posts);
@@ -39,7 +59,6 @@ postRouter.get('/posts/me', bearerAuthMiddleware, (request, response, next) => {
 });
 
 postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.find({ event: request.params.event_id })
     .then((events) => {
       return response.json(events);
@@ -48,7 +67,6 @@ postRouter.get('/posts/:event_id', bearerAuthMiddleware, (request, response, nex
 });
 
 postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
   return Post.findById(request.params.post_id)
     .then((foundPost) => {
@@ -63,7 +81,6 @@ postRouter.put('/posts/likes/:post_id', bearerAuthMiddleware, (request, response
 });
 
 postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - Invalid Request'));
   const options = { runValidators: true, new: true };
   return Post.findByIdAndUpdate(request.params.post_id, request.body, options)
     .then((updatedPost) => {
@@ -74,7 +91,6 @@ postRouter.put('/posts/:post_id', bearerAuthMiddleware, jsonParser, (request, re
 });
 
 postRouter.delete('/posts/:post_id', bearerAuthMiddleware, (request, response, next) => {
-  if (!request.account) return next(new HttpError(400, 'AUTH - invalid request'));
   return Post.findById(request.params.post_id)
     .then((post) => {
       return post.remove();

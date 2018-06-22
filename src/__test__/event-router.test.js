@@ -4,7 +4,8 @@ import faker from 'faker';
 import superagent from 'superagent';
 import { startServer, stopServer } from '../lib/server';
 import { pCreateProfileMock } from './lib/profile-mock';
-import { pCreateEventMock, pRemoveEventMock, pCreatePublicEventMock } from './lib/event-mock';
+import { pCreateEventMock, pRemoveEventMock, pCreatePublicEventMock, pCreateEventWithGuests } from './lib/event-mock';
+import Profile from '../model/profile';
 
 const apiURL = `http://localhost:${process.env.PORT}`;
 
@@ -35,6 +36,38 @@ describe('EVENT ROUTER', () => {
               expect(response.body.location).toEqual(eventToPost.location);
               expect(response.body.profile).toEqual(eventToPost.profile);
             });
+        });
+    });
+
+    test('POST /events with a guest should return 200 and add event to guest profile', () => {
+      const resultsMock = {};
+      return pCreateProfileMock()
+        .then((createdProfile) => {
+          resultsMock.profile = createdProfile.profile;
+          resultsMock.token = createdProfile.accountSetMock.token;
+          return pCreateProfileMock();
+        })
+        .then((secondProfile) => {
+          resultsMock.guestEmail = secondProfile.profile.email;
+          return superagent.post(`${apiURL}/events`)
+            .set('Authorization', `Bearer ${resultsMock.token}`)
+            .send({
+              title: faker.lorem.words(5),
+              description: faker.lorem.words(10),
+              location: faker.lorem.words(2),
+              profile: resultsMock.profile._id,
+              guests: [resultsMock.guestEmail],
+            });
+        })
+        .then((response) => {
+          expect(response.status).toEqual(200);
+          expect(response.body.guests).toHaveLength(1);
+          resultsMock.eventId = response.body._id;
+          return Profile.findOne({ email: resultsMock.guestEmail });
+        })
+        .then((profile) => {
+          expect(profile.events).toHaveLength(1);
+          expect(profile.events[0].toString()).toEqual(resultsMock.eventId.toString());
         });
     });
 
@@ -128,11 +161,28 @@ describe('EVENT ROUTER', () => {
     test('DELETE /events/:id should delete an event and return a 204 status code', () => {
       return pCreateEventMock()
         .then((mockEvent) => {
-          return superagent.delete(`${apiURL}/events/${mockEvent.event._id}`)
+          return superagent.del(`${apiURL}/events/${mockEvent.event._id}`)
             .set('Authorization', `Bearer ${mockEvent.profile.accountSetMock.token}`);
         })
         .then((response) => {
           expect(response.status).toEqual(204);
+        });
+    });
+
+    test('DELETE /events/:id should return 204 and remove event from guests profiles', () => {
+      let guestToCompare = null;
+      return pCreateEventWithGuests()
+        .then((mockEvent) => {
+          guestToCompare = mockEvent.guestEmail;
+          return superagent.del(`${apiURL}/events/${mockEvent.event._id}`)
+            .set('Authorization', `Bearer ${mockEvent.token}`);
+        })
+        .then((response) => {
+          expect(response.status).toEqual(204);
+          return Profile.findOne({ email: guestToCompare });
+        })
+        .then((profileReturned) => {
+          expect(profileReturned.events).toHaveLength(0);
         });
     });
   });
@@ -163,8 +213,7 @@ describe('EVENT ROUTER', () => {
       return pCreatePublicEventMock()
         .then((resultMock) => {
           publicEvent = resultMock.event;
-          return superagent.get(`${apiURL}/events/public`)
-            .set('Authorization', `Bearer ${resultMock.token}`);
+          return superagent.get(`${apiURL}/events/public`);
         })
         .then((response) => {
           expect(response.status).toEqual(200);

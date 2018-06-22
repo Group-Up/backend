@@ -25,9 +25,6 @@ export default (request, response, next) => {
   }
 
   return promisify(jsonWebToken.verify)(token, process.env.HASH_SECRET_STRING)
-    .catch((error) => {
-      Promise.reject(new HttpError(400, `AUTH BEARER - Json webtoken Error ${error}`));
-    })
     .then((decryptedToken) => {
       return Account.findOne({ tokenSeed: decryptedToken.tokenSeed });
     })
@@ -38,5 +35,7 @@ export default (request, response, next) => {
       request.account = account;
       return next();
     })
-    .catch(next);
+    .catch((error) => {
+      return next(new HttpError(400, `AUTH BEARER - Json webtoken Error ${error}`));
+    });
 };

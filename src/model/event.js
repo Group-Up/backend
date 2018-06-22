@@ -1,7 +1,6 @@
 'use strict';
 
 import mongoose from 'mongoose';
-import HttpError from 'http-errors';
 import Profile from './profile';
 
 const eventSchema = mongoose.Schema({
@@ -48,16 +47,20 @@ const eventSchema = mongoose.Schema({
 });
 
 function savePreHook(done) {
+  // Carl -- prehook is needed to add the event to the creator's events array
   return Profile.findById(this.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(404, 'Profile not found');
-      profileFound.events.push(this._id);
+      if (profileFound.events.indexOf(this._id) < 0) {
+        profileFound.events.push(this._id);
+      }
       return profileFound.save();
     })
     .then(() => {
       return Promise.all(this.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
-          guestProfile.events.push(this._id);
+          if (guestProfile.events.indexOf(this._id) < 0) {
+            guestProfile.events.push(this._id);
+          }
           return guestProfile.save();
         })));
     })
@@ -67,29 +70,29 @@ function savePreHook(done) {
     .catch(done);
 }
 
-function removePostHook(document, next) {
+function removeEventHook(document, next) {
+  // Carl -- posthook is needed to remove the event._id from the user's events array
   Profile.findById(document.profile)
     .then((profileFound) => {
-      if (!profileFound) throw new HttpError(400, 'Profile not found');
       profileFound.events = profileFound.events.filter((event) => {
         return event._id.toString() !== document._id.toString();
       });
       return profileFound.save();
     })
     .then(() => {
-      document.guests.map(guest => Profile.findOne({ email: guest })
+      return Promise.all(document.guests.map(guest => Profile.findOne({ email: guest })
         .then((guestProfile) => {
           guestProfile.events = guestProfile.events.filter((event) => {
             return event._id.toString() !== document._id.toString();
           });
           return guestProfile.save();
-        }));
+        })));
     })
     .then(() => next())
     .catch(next);
 }
 
 eventSchema.pre('save', savePreHook);
-eventSchema.post('remove', removePostHook);
+eventSchema.post('remove', removeEventHook);
 
 export default mongoose.model('event', eventSchema);
