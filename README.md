@@ -122,7 +122,7 @@ To start the db and test the routes, from the command line, enter:
 
 ## Architecture
 
-JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winston, multer, http-errors, uuid, logger, jest, babel, dotenv, body-parser, crypto, bcrypt, jsonwebtoken, fs-extra, faker.
+JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winston, multer, http-errors, uuid, logger, jest, babel, dotenv, body-parser, crypto, bcrypt, jsonwebtoken, fs-extra, faker, artillery.
 
 ## Change Log
 
@@ -136,5 +136,4 @@ JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winsto
  * 6-20-2018 4:20pm - Created custom cards, Title, File Upload, & List/Description - hyperlinks
  * 6-20-2018 7:54pm - Implemented Public vs. Private Event Functionality.
 
-#### Model Relationships
 
