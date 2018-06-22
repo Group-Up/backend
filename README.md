@@ -131,9 +131,16 @@ JavaScript, Node, Express, MongoDB, Mongoose, Travis, Heroku, superagent, winsto
  * 6-18-2018 11:30am - Completed Form Validation, Google OAuth functionality, and Bearer Basic Authentication for Login/Signup.
  * 6-18-2018 1:00pm - Account, Event, Post Router tests established.
  * 6-18-2018 3:30pm - Routes established for Profile, Post, and Events(Get, Put, Post, Delete)
+ * 6-19-2018 9:30am - Site deployed to Heroku.
  * 6-19-2018 4:45pm - Create "New Event" functionality working (Date, Time/Schedule, Description)
  * 6-19-2018 5:30pm - Delete functionality implemented.
  * 6-20-2018 4:20pm - Created custom cards, Title, File Upload, & List/Description - hyperlinks
  * 6-20-2018 7:54pm - Implemented Public vs. Private Event Functionality.
+ * 6-21-2018 2:20pm - Changed Google redirect URI constant on deployed.
+ * 6-21-2018 4:00pm - Rendered public events on dashboard.
+ * 6-21-2018 4:45pm - Performed load testing on server.
+ * 6-21-2018 5:00pm - Friends invite/sharing functionality implemented.
+ * 6-21-2018 5:45pm - Completed SCSS implementation.
+
 
 
