@@ -31,8 +31,7 @@
             "json": {
               "username": "{{ username }}",
               "email": "{{ email }}",
-              "passwordHash": "{{ passwordHash }}",
-              "tokenSeed": "{{ tokenSeed }}"
+              "password": "{{ password }}"
             },
             "capture": {
               "json": "$.token",
