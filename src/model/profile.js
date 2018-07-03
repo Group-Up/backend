@@ -20,6 +20,7 @@ const profileSchema = mongoose.Schema({
   },
   profileImage: { 
     type: String, 
+    default: 'https://groupup.s3.us-west-2.amazonaws.com/d55fb2961fe2484be1e7064276403789.profile_image_blank.png',
   },
   account: {
     type: mongoose.Schema.ObjectId,

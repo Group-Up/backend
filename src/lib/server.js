@@ -15,9 +15,11 @@ import googleAuthRoute from '../routes/google-login-route';
 const app = express();
 let server = null;
 
-app.use(cors({ credentials: true, origin: process.env.CORS_ORIGIN }));
+app.use(cors({
+  credentials: true,
+  origin: [process.env.CORS_ORIGIN_2, process.env.CORS_ORIGIN_1],
+}));
 app.use(loggerMiddleware);
-
 app.use(authRoutes);
 app.use(profileRoutes);
 app.use(postRoutes);
