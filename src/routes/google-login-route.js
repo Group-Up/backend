@@ -9,7 +9,7 @@ require('dotenv').config();
 
 const GOOGLE_OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_OPENID_URL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
-const GOOGLE_CONTACTS_URL = 'https://people.googleapis.com/v1/people/me/connections?personFields=names%2CemailAddresses';
+const GOOGLE_CONTACTS_URL = 'https://people.googleapis.com/v1/people/me/connections?personFields=names,emailAddresses';
 
 const googleRouter = new Router();
 
@@ -19,11 +19,12 @@ const getContacts = (user, imageUrl) => {
     .set('Authorization', `Bearer ${user.accessToken}`)
     .then((contactsResponse) => {
       const contacts = [];
-      contactsResponse.body.connections[0].emailAddresses.forEach(((email, index) => {
-        if (index % 2 !== 1) contacts.push({ email: email.value });
-      }));
-      contactsResponse.body.connections[0].names.forEach((contact, index) => {
-        contacts[index].name = contact.displayName;
+      contactsResponse.body.connections.forEach((contactObject) => {
+        const contact = {
+          name: contactObject.names[0].displayName,
+          email: contactObject.emailAddresses[0].value,
+        };
+        contacts.push(contact);
       });
       profile.friends = contacts;
       return new Profile({
