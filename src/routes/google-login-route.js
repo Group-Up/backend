@@ -11,7 +11,6 @@ const GOOGLE_OAUTH_URL = 'https://www.googleapis.com/oauth2/v4/token';
 const GOOGLE_OPENID_URL = 'https://www.googleapis.com/plus/v1/people/me/openIdConnect';
 const GOOGLE_CONTACTS_URL = 'https://people.googleapis.com/v1/people/me/connections?personFields=names,emailAddresses';
 
-
 const googleRouter = new Router();
 
 const getContacts = (user, imageUrl) => {
