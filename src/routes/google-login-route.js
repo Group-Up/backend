@@ -21,8 +21,8 @@ const getContacts = (user, imageUrl) => {
       const contacts = [];
       contactsResponse.body.connections.forEach((contactObject) => {
         const contact = {
-          name: contactObject.names[0].displayName,
-          email: contactObject.emailAddresses[0].value,
+          name: contactObject.names && contactObject.names[0].displayName,
+          email: contactObject.emailAddresses && contactObject.emailAddresses[0].value,
         };
         contacts.push(contact);
       });
@@ -77,15 +77,29 @@ googleRouter.get('/oauth/google', (request, response, next) => {
                   return getContacts(user, profileImage)
                     .then(() => {
                       response
-                        .cookie('GU-Token', token)
-                        .redirect(process.env.CLIENT_URL);
+                        .cookie('GU-Token', token, { 
+                          secure: false, 
+                          maxAge: (7 * 24 * 60 * 60000),
+                          domain: process.env.DOMAIN,
+                          path: '/', 
+                          signed: false, 
+                          httpOnly: false, 
+                        })
+                        .redirect(`${process.env.CLIENT_URL}`);
                     });
                 });
             }
             return account.pCreateLoginToken()
               .then((token) => {
                 return response
-                  .cookie('GU-Token', token)
+                  .cookie('GU-Token', token, { 
+                    secure: false, 
+                    maxAge: (7 * 24 * 60 * 60000),
+                    domain: process.env.DOMAIN,
+                    path: '/', 
+                    signed: false, 
+                    httpOnly: false, 
+                  })
                   .redirect(process.env.CLIENT_URL);
               });
           });
